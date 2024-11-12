@@ -3,13 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Book {
   bookId          String         @id @default(uuid())
-  title           String         @unique
+  title           String
   genre           String
   publishedYear   Int
   totalCopies     Int
@@ -24,7 +25,6 @@ model Member {
   name           String
   email          String         @unique
   phone          String?
-  contactNumber  String
   membershipDate DateTime       @default(now())
   BorrowRecord   BorrowRecord[]
 
@@ -33,13 +33,12 @@ model Member {
 
 model BorrowRecord {
   borrowId   String    @id @default(uuid())
-  name       String
-  borrowDate DateTime
+  borrowDate DateTime  @default(now())
   returnDate DateTime?
   bookId     String
   memberId   String
-  book       Book      @relation(fields: [bookId], references: [bookId], onDelete: Cascade)
-  member     Member    @relation(fields: [memberId], references: [memberId], onDelete: Cascade)
+  book       Book      @relation(fields: [bookId], references: [bookId])
+  member     Member    @relation(fields: [memberId], references: [memberId])
 
   @@map("borrow_records")
 }
