@@ -1,22 +1,30 @@
 import express from "express";
-import { BookRoutes } from "../modules/Book/book.route";
-import { BorrowRoutes } from "../modules/Borrow/borrow.route";
-import { MemberRoutes } from "../modules/Member/member.route";
+import { AuthRoutes } from "../modules/Auth/auth.routes";
+import { productRoutes } from "../modules/Product/product.routes";
+import { shopRoutes } from "../modules/Shop/shop.routes";
+import { userRoutes } from "../modules/User/user.routes";
+
 const router = express.Router();
+
 const moduleRoutes = [
   {
-    path: "/books",
-    route: BookRoutes,
+    path: "/user",
+    route: userRoutes,
   },
   {
-    path: "/members",
-    route: MemberRoutes,
+    path: "/auth",
+    route: AuthRoutes,
   },
   {
-    path: "/",
-    route: BorrowRoutes,
+    path: "/shop",
+    route: shopRoutes,
+  },
+  {
+    path: "/product",
+    route: productRoutes,
   },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
+
 export default router;

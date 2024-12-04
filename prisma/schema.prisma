@@ -3,42 +3,143 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-model Book {
-  bookId          String         @id @default(uuid())
-  title           String
-  genre           String
-  publishedYear   Int
-  totalCopies     Int
-  availableCopies Int
-  BorrowRecord    BorrowRecord[]
-
-  @@map("books")
+model User {
+  id                 String     @id @default(uuid())
+  name               String
+  email              String     @unique
+  password           String
+  role               UserRole
+  profilePhoto       String?
+  shops              Shop[]
+  followedShops      Shop[]     @relation("FollowedShops")
+  reviews            Review[]
+  orders             Order[]
+  isSuspended        Boolean    @default(false)
+  needPasswordChange Boolean    @default(true)
+  status             UserStatus @default(ACTIVE)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  Product            Product[]
 }
 
-model Member {
-  memberId       String         @id @default(uuid())
-  name           String
-  email          String         @unique
-  phone          String?
-  membershipDate DateTime       @default(now())
-  BorrowRecord   BorrowRecord[]
-
-  @@map("members")
+model Shop {
+  id          String    @id @default(uuid())
+  name        String
+  logo        String?
+  description String?
+  owner       User      @relation(fields: [ownerId], references: [id])
+  ownerId     String
+  products    Product[]
+  orders      Order[]
+  followers   User[]    @relation("FollowedShops")
+  createdAt   DateTime  @default(now())
 }
 
-model BorrowRecord {
-  borrowId   String    @id @default(uuid())
-  borrowDate DateTime  @default(now())
-  returnDate DateTime?
-  bookId     String
-  memberId   String
-  book       Book      @relation(fields: [bookId], references: [bookId])
-  member     Member    @relation(fields: [memberId], references: [memberId])
+// Product model represents items in a shop
+model Product {
+  id            String         @id @default(uuid())
+  name          String
+  price         Float
+  description   String
+  shop          Shop           @relation(fields: [shopId], references: [id])
+  shopId        String
+  category      String
+  thumbnail     String
+  images        String[]
+  tags          String[]
+  inventory     Int
+  weight        Int?
+  dimensions    String?
+  brand         String?
+  isFlashSale   Boolean        @default(false)
+  reviews       Review[]
+  orderProducts OrderProduct[]
+  createdAt     DateTime       @default(now())
+  Customer      User?          @relation(fields: [customerId], references: [id])
+  customerId    String?
+}
 
-  @@map("borrow_records")
+// Order model represents customer orders
+model Order {
+  id             String         @id @default(uuid())
+  customer       User           @relation(fields: [customerId], references: [id])
+  customerId     String
+  shopId         String
+  totalAmount    Float
+  products       OrderProduct[]
+  paymentStatus  PaymentStatus
+  shippingStatus ShippingStatus
+  shop           Shop           @relation(fields: [shopId], references: [id])
+  payment        Payment        @relation(fields: [paymentId], references: [id])
+  paymentId      String
+  createdAt      DateTime       @default(now())
+}
+
+// OrderProduct represents the many-to-many relationship between orders and products
+
+model OrderProduct {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  shopId    String
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  content   String
+  rating    Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+  Vendor    User?    @relation(fields: [authorId], references: [id])
+  authorId  String?
+}
+
+// Payment model represents payment details for an order
+model Payment {
+  id        String        @id @default(uuid())
+  method    PaymentMethod
+  status    PaymentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  Order     Order[]
+}
+
+// Enums for role, status, and other constants
+enum UserRole {
+  ADMIN
+  VENDOR
+  CUSTOMER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum ShippingStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  PAYPAL
+  STRIPE
+  CASH_ON_DELIVERY
 }

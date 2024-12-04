@@ -1,11 +1,13 @@
 {
-  "name": "library-management-server",
+  "name": "altium-medicare-server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "migrate": "npx prisma migrate dev",
+    "postinstall": "prisma generate",
     "studio": "npx prisma studio",
+    "build": "tsc",
     "validate": "npx prisma validate"
   },
   "devDependencies": {
@@ -14,8 +16,10 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/luxon": "^3.4.2",
+    "@types/multer": "^1.4.11",
     "@types/node": "^20.11.26",
     "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.14",
     "@types/uuid": "^9.0.8",
     "prisma": "^5.11.0",
     "ts-node": "^10.9.2",
@@ -27,6 +31,7 @@
     "@types/cookie-parser": "^1.4.7",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
+    "cloudinary": "^2.0.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
@@ -37,6 +42,8 @@
     "luxon": "^3.4.4",
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.12",
+    "sslcommerz-lts": "^1.1.0",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   }

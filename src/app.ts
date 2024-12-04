@@ -5,8 +5,13 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
 
 const app: Application = express();
-app.use(cors());
-
+// CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,6 +29,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(httpStatus.NOT_FOUND).json({
     success: false,
     message: "API NOT FOUND!",
+    status: httpStatus.NOT_FOUND,
     error: {
       path: req.originalUrl,
       message: "Your requested path is not found!",
