@@ -22,8 +22,28 @@ const getAllShops = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getShopProfile = catchAsync(async (req: Request, res: Response) => {
+  const result = await shopServices.getShopProfile(req.params);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: "Shop Profile successfully!",
+    data: result,
+  });
+});
+const toggleFollowShop = catchAsync(async (req: Request, res: Response) => {
+  const result = await shopServices.toggleFollowShop(req);
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: result.message,
+    data: "",
+  });
+});
 
 export const shopControllers = {
   createShop,
+  getShopProfile,
   getAllShops,
+  toggleFollowShop,
 };

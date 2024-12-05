@@ -21,6 +21,7 @@ router.get(
   auth(UserRole.VENDOR),
   productControllers.vendorAllProducts
 );
+router.get("/:id", productControllers.getSingleProducts);
 router.get("/", productControllers.allProducts);
 
 export const productRoutes = router;

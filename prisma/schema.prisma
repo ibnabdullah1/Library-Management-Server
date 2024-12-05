@@ -70,6 +70,7 @@ model Order {
   customerId     String
   shopId         String
   totalAmount    Float
+  address        String?
   products       OrderProduct[]
   paymentStatus  PaymentStatus
   shippingStatus ShippingStatus
@@ -91,6 +92,16 @@ model OrderProduct {
   quantity  Int
 }
 
+// Payment model represents payment details for an order
+model Payment {
+  id            String        @id @default(uuid())
+  method        PaymentMethod
+  transactionId String?
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  Order         Order[]
+}
+
 model Review {
   id        String   @id @default(uuid())
   content   String
@@ -98,17 +109,8 @@ model Review {
   product   Product  @relation(fields: [productId], references: [id])
   productId String
   createdAt DateTime @default(now())
-  Vendor    User?    @relation(fields: [authorId], references: [id])
+  user      User?    @relation(fields: [authorId], references: [id])
   authorId  String?
-}
-
-// Payment model represents payment details for an order
-model Payment {
-  id        String        @id @default(uuid())
-  method    PaymentMethod
-  status    PaymentStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  Order     Order[]
 }
 
 // Enums for role, status, and other constants

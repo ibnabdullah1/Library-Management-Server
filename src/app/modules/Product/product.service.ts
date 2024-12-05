@@ -94,9 +94,45 @@ const allProducts = async () => {
 
   return result;
 };
+const getSingleProducts = async ({ id }: any) => {
+  const result = await prisma.product.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      shop: true,
+      reviews: {
+        select: {
+          id: true,
+          content: true,
+          rating: true,
+          createdAt: true,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+        },
+      },
+      orderProducts: true,
+    },
+  });
+
+  if (!result) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      `Product with ID ${id} not found.`
+    );
+  }
+
+  return result;
+};
 
 export const productServices = {
   createProduct,
   allProducts,
   vendorAllProducts,
+  getSingleProducts,
 };
